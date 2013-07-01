@@ -15,6 +15,7 @@ public class Control
   // ast
   public static boolean dumpAst = false;
 
+
   // elaborator
   public static boolean elabClassTable = false;
   public static boolean elabMethodTable = false;

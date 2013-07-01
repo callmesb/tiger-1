@@ -11,17 +11,16 @@ import control.Control;
 
 import parser.Parser;
 
-public class Tiger
-{
-  public static void main(String[] args)
-  {
-    InputStream fstream;
-    Parser parser;
+public class Tiger {
+	public static void main(String[] args) {
+		InputStream fstream;
+		Parser parser;
 
-    // ///////////////////////////////////////////////////////
-    // handle command line arguments
-    CommandLine cmd = new CommandLine();
-    String fname = cmd.scan(args);
+		// ///////////////////////////////////////////////////////
+		// handle command line arguments
+		CommandLine cmd = new CommandLine();
+		String fname = cmd.scan(args);
+
 
     // /////////////////////////////////////////////////////
     // to test the pretty printer on the "test/Fac.java" program
@@ -51,42 +50,50 @@ public class Tiger
       System.exit(1);
     }
 
+
+
     if (fname == null) {
       cmd.usage();
       return;
     }
     Control.fileName = fname;
 
-    // /////////////////////////////////////////////////////
-    // it would be helpful to be able to test the lexer
-    // independently.
-    if (control.Control.testlexer) {
-      System.out.println("Testing the lexer. All tokens:");
-      try {
-        fstream = new BufferedInputStream(new FileInputStream(fname));
-        Lexer lexer = new Lexer(fname, fstream);
-        Token token = lexer.nextToken();
-        while (token.kind != Kind.TOKEN_EOF) {
-          System.out.println(token.toString());
-          token = lexer.nextToken();
-        }
-        fstream.close();
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-      System.exit(1);
-    }
 
-    // /////////////////////////////////////////////////////////
-    // normal compilation phases.
-    ast.program.T theAst = null;
+		// /////////////////////////////////////////////////////
+		// it would be helpful to be able to test the lexer
+		// independently.
+		if (control.Control.testlexer) {
+			System.out.println("Testing the lexer. All tokens:");
+			try {
+				fstream = new BufferedInputStream(new FileInputStream(fname));
+				Lexer lexer = new Lexer(fname, fstream);
+				Token token = lexer.nextToken();
+				while (token.kind != Kind.TOKEN_EOF) {
+					System.out.println(token.toString());
+					token = lexer.nextToken();
+				}
+				fstream.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			System.exit(1);
+		}
 
-    // parsing the file, get an AST.
-    try {
-      fstream = new BufferedInputStream(new FileInputStream(fname));
-      parser = new Parser(fname, fstream);
+		// /////////////////////////////////////////////////////////
+		// normal compilation phases.
+		ast.program.T theAst = null;
 
-      theAst = parser.parse();
+		// parsing the file, get an AST.
+		try {
+			fstream = new BufferedInputStream(new FileInputStream(fname));
+			parser = new Parser(fname, fstream);
+
+			theAst = parser.parse();
+			if(null == theAst){
+				System.out.println("\nPlease modify the parsing errors.");
+				System.exit(1);
+			}
+
 
       fstream.close();
     } catch (Exception e) {
@@ -134,4 +141,5 @@ public class Tiger
 
     return;
   }
+
 }
