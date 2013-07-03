@@ -141,16 +141,35 @@ public class Tiger {
     // call gcc to compile the generated C or x86
     // file, or call java to run the bytecode file.
     // Your code:
-    String str[] = new String[]{"gcc","a.c","-o","a.out"};
-    Process proc = Runtime.getRuntime().exec("str");
+    /*String str = "gcc " + "a.c " + "-o " + "hehe.out";
+    Process proc = Runtime.getRuntime().exec(str);
     BufferedReader br=new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
     String line=null;
     while( (line=br.readLine())!=null)
      {
        System.out.println(line);
-     }
+     }*/
+    Process p = null;
+    BufferedReader br;
+    StringBuffer sb;
+    String temp ;
+    System.out.println("Now Compiling C code using GCC...");
+	
+	String cmdstr = "gcc -o " + Control.fileName + ".out " + Control.fileName + ".c " + "runtime/runtime.c";
+	//System.out.println(cmdstr);
+   // String cmdstr = "gcc -o " + "a.out " + "a.c " + "runtime/runtime.c";
+	p = Runtime.getRuntime().exec(cmdstr);
+	br = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+	sb = new StringBuffer();
+	while( ((temp = br.readLine()) != null) ) {
+		sb.append(temp + "\n");
+	}
+	System.out.println(sb);
+
+	System.out.println("Compile ended. Output file is \"" + Control.fileName + ".out\". You can run it now.");
     return;
+    
   }
 
 }

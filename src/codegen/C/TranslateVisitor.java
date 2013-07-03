@@ -97,13 +97,17 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.False e)
   {
-	  this.exp = new codegen.C.exp.Id("false");
+	  this.exp = new codegen.C.exp.Num(0);
   }
 
   @Override
   public void visit(ast.exp.Id e)
   {
-    this.exp = new codegen.C.exp.Id(e.id);
+	if(e.isField)
+		this.exp = new codegen.C.exp.Id("this->" + e.id);
+	else
+		this.exp = new codegen.C.exp.Id(e.id);
+    //this.exp = new codegen.C.exp.Id(e.id);
     return;
   }
 
@@ -188,7 +192,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.True e)
   {
-	  this.exp = new codegen.C.exp.Id("true");
+	  this.exp = new codegen.C.exp.Num(0);
   }
 
   // statements
@@ -196,18 +200,24 @@ public class TranslateVisitor implements ast.Visitor
   public void visit(ast.stm.Assign s)
   {
     s.exp.accept(this);
-    this.stm = new codegen.C.stm.Assign(s.id, this.exp);
+    if(s.isField)
+      this.stm = new codegen.C.stm.Assign("this->"+s.id, this.exp);
+    else
+      this.stm = new codegen.C.stm.Assign(s.id, exp);
     return;
   }
 
   @Override
   public void visit(ast.stm.AssignArray s)
-  {
+  {	 
+	  s.index.accept(this);
+	  codegen.C.exp.T index = this.exp;
 	  s.exp.accept(this);
 	  codegen.C.exp.T exp = this.exp;
-	 // s.index.accept(this);
-	  //codegen.C.exp.T index = this.exp;
-	  this.stm = new codegen.C.stm.Assign(s.id, exp);
+	  if(s.isField)
+		 this.stm = new codegen.C.stm.AssignArray("this->"+s.id, index, exp);
+	  else
+		 this.stm = new codegen.C.stm.AssignArray(s.id,index, exp);
   }
 
   @Override
@@ -259,7 +269,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.type.Boolean t)
   {
-	 // this.type = new codegen.C.type.Boolean("bool");
+	  this.type = new codegen.C.type.Int();
   }
 
   @Override

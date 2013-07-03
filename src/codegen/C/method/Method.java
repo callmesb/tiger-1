@@ -11,7 +11,7 @@ public class Method extends T
   public java.util.LinkedList<codegen.C.dec.T> locals;
   public java.util.LinkedList<codegen.C.stm.T> stms;
   public codegen.C.exp.T retExp;
-
+  
   public Method(codegen.C.type.T retType, String classId, String id,
       java.util.LinkedList<codegen.C.dec.T> formals,
       java.util.LinkedList<codegen.C.dec.T> locals,

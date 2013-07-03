@@ -257,7 +257,10 @@ public class ElaboratorVisitor implements ast.Visitor {
 		ast.type.T type = this.methodTable.get(s.id);
 		// if search failed, then s.id must
 		if (type == null)
+			{
 			type = this.classTable.get(this.currentClass, s.id);
+			s.isField = true;
+			}
 		if (type == null) {
 			type = new ast.type.Int();
 			error();
@@ -284,7 +287,10 @@ public class ElaboratorVisitor implements ast.Visitor {
 		ast.type.T type = this.methodTable.get(s.id);
 		// if search failed, then s.id must
 		if (type == null)
+			{
 			type = this.classTable.get(this.currentClass, s.id);
+			s.isField = true;
+			}
 		if (type == null) {
 			type = new ast.type.Int();
 			error();

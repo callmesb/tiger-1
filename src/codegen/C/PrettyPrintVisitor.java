@@ -6,7 +6,8 @@ public class PrettyPrintVisitor implements Visitor
 {
   private int indentLevel;
   private java.io.BufferedWriter writer;
-
+  public boolean methodDec = true;
+  
   public PrettyPrintVisitor()
   {
     this.indentLevel = 2;
@@ -112,8 +113,9 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Length e)
   {
+	this.say("sizeof(");
 	e.array.accept(this);
-	this.say(".length");
+	this.say(")/sizeof(int)");
 	return;
   }
 
@@ -134,7 +136,7 @@ public class PrettyPrintVisitor implements Visitor
 	this.say("malloc(sizeof(int)*");
 	e.exp.accept(this);
 	this.say( ")");
-	this.sayln(";");
+	//this.sayln(";");
 	//this.say("new int[");
 	//e.exp.accept(this);
 	//this.say("]");
@@ -205,7 +207,7 @@ public class PrettyPrintVisitor implements Visitor
 	  this.printSpaces();
 	  //this.say(s.exp);
 	  this.say(s.id + "[");
-	  //s.index.accept(this);
+	  s.index.accept(this);
 	  this.say("] = ");
 	  s.exp.accept(this);
 	  this.sayln(";");
@@ -360,9 +362,13 @@ public class PrettyPrintVisitor implements Visitor
       if (size > 0)
         this.say(", ");
     }
-    this.sayln(")");
+    this.say(")");
+    if(this.methodDec)
+    	{
+    		this.sayln(";");
+    		return;
+    	}
     this.sayln("{");
-
     for (codegen.C.dec.T d : m.locals) {
       codegen.C.dec.Dec dec = (codegen.C.dec.Dec) d;
       this.say("  ");
@@ -396,6 +402,7 @@ public class PrettyPrintVisitor implements Visitor
     return;
   }
 
+
   // vtables
   @Override
   public void visit(codegen.C.vtable.Vtable v)
@@ -414,6 +421,7 @@ public class PrettyPrintVisitor implements Visitor
   private void outputVtable(codegen.C.vtable.Vtable v)
   {
     this.sayln("struct " + v.id + "_vtable " + v.id + "_vtable_ = ");
+    //this.sayln("struct " + v.id + "_vtable " + v.id + "_vtable = ");
     this.sayln("{");
     for (codegen.C.Ftuple t : v.ms) {
       this.say("  ");
@@ -468,17 +476,19 @@ public class PrettyPrintVisitor implements Visitor
     for (codegen.C.classs.T c : p.classes) {
       c.accept(this);
     }
-
+    
     this.sayln("// vtables structures");
     for (codegen.C.vtable.T v : p.vtables) {
       v.accept(this);
     }
     this.sayln("");
-
-    this.sayln("// methods");
+    
+    this.sayln("// moethods decs");
     for (codegen.C.method.T m : p.methods) {
-      m.accept(this);
-    }
+        m.accept(this);
+      }
+    this.methodDec = false;
+ 
     this.sayln("");
 
     this.sayln("// vtables");
@@ -486,7 +496,10 @@ public class PrettyPrintVisitor implements Visitor
       outputVtable((codegen.C.vtable.Vtable) v);
     }
     this.sayln("");
-
+    this.sayln("// methods");
+    for (codegen.C.method.T m : p.methods) {
+      m.accept(this);
+    }
     this.sayln("// main method");
     p.mainMethod.accept(this);
     this.sayln("");

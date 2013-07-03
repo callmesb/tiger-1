@@ -6,6 +6,7 @@ public class AssignArray extends T {
 	public ast.exp.T exp;
 	public int row;
 	public int col;
+	public boolean isField;
 
 	public AssignArray(String id, ast.exp.T index, ast.exp.T exp,int row,int col) {
 		this.id = id;
@@ -13,11 +14,13 @@ public class AssignArray extends T {
 		this.exp = exp;
 		this.row = row;
 		this.col = col;
+		this.isField = false;
 	}
 	public AssignArray(String id, ast.exp.T index, ast.exp.T exp) {
 		this.id = id;
 		this.index = index;
 		this.exp = exp;
+		this.isField = false;
 	}
 
 	@Override
