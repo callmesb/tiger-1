@@ -1,5 +1,7 @@
 package codegen.C;
 
+import codegen.C.stm.T;
+
 // Given a Java ast, translate it into a C ast and outputs it.
 
 public class TranslateVisitor implements ast.Visitor
@@ -46,16 +48,33 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Add e)
   {
+	e.left.accept(this);
+    codegen.C.exp.T left = this.exp;
+    e.right.accept(this);
+    codegen.C.exp.T right = this.exp;
+    this.exp = new codegen.C.exp.Add(left, right);
+    return;
   }
 
   @Override
   public void visit(ast.exp.And e)
   {
+	  e.left.accept(this);
+	  codegen.C.exp.T left = this.exp;
+	  e.right.accept(this);
+	  codegen.C.exp.T right = this.exp;
+	  this.exp = new codegen.C.exp.And(left, right);
+	  return;
   }
 
   @Override
   public void visit(ast.exp.ArraySelect e)
   {
+	  e.array.accept(this);
+	  codegen.C.exp.T array = this.exp;
+	  e.index.accept(this);
+	  codegen.C.exp.T index = this.exp;
+	  this.exp = new codegen.C.exp.ArraySelect(array, index);
   }
 
   @Override
@@ -78,6 +97,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.False e)
   {
+	  this.exp = new codegen.C.exp.Id("false");
   }
 
   @Override
@@ -90,6 +110,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Length e)
   {
+	  e.array.accept(this);
+	  codegen.C.exp.T length = this.exp;
+	  this.exp = new codegen.C.exp.Length(length);
   }
 
   @Override
@@ -106,6 +129,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.NewIntArray e)
   {
+	  e.exp.accept(this);
+	  codegen.C.exp.T t = this.exp;
+	  this.exp = new codegen.C.exp.NewIntArray(t);
   }
 
   @Override
@@ -118,6 +144,9 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.Not e)
   {
+	  e.exp.accept(this);
+	  codegen.C.exp.T not = this.exp;
+	  this.exp = new codegen.C.exp.Not(not);
   }
 
   @Override
@@ -159,6 +188,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.exp.True e)
   {
+	  this.exp = new codegen.C.exp.Id("true");
   }
 
   // statements
@@ -173,11 +203,25 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.stm.AssignArray s)
   {
+	  s.exp.accept(this);
+	  codegen.C.exp.T exp = this.exp;
+	 // s.index.accept(this);
+	  //codegen.C.exp.T index = this.exp;
+	  this.stm = new codegen.C.stm.Assign(s.id, exp);
   }
 
   @Override
   public void visit(ast.stm.Block s)
   {
+	 java.util.LinkedList<T> st = new java.util.LinkedList<T>() ;
+	for(ast.stm.T t : s.stms)
+	{
+		//s.stms.getFirst().accept(this);
+		t.accept(this);
+		codegen.C.stm.T ss = this.stm;
+		st.add(ss);
+	}
+	this.stm = new codegen.C.stm.Block(st);
   }
 
   @Override
@@ -204,17 +248,24 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.stm.While s)
   {
+	  s.condition.accept(this);
+	  codegen.C.exp.T condition = this.exp;
+	  s.body.accept(this);
+	  codegen.C.stm.T body = this.stm;
+	  this.stm = new codegen.C.stm.While(condition, body);
   }
 
   // type
   @Override
   public void visit(ast.type.Boolean t)
   {
+	 // this.type = new codegen.C.type.Boolean("bool");
   }
 
   @Override
   public void visit(ast.type.Class t)
   {
+	  this.type = new codegen.C.type.Class(t.id);
   }
 
   @Override
@@ -226,6 +277,7 @@ public class TranslateVisitor implements ast.Visitor
   @Override
   public void visit(ast.type.IntArray t)
   {
+	  this.type = new codegen.C.type.IntArray();
   }
 
   // dec

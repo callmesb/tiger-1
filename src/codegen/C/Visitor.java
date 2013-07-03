@@ -68,4 +68,7 @@ public interface Visitor
 
   // program
   public void visit(codegen.C.program.Program p);
+
+//public void visit(Boolean boolean1);
+
 }

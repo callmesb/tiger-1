@@ -55,16 +55,30 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Add e)
   {
+	//  this.say("this->");
+	    e.left.accept(this);
+	    this.say(" + ");
+	    e.right.accept(this);
+	    return;
   }
 
   @Override
   public void visit(codegen.C.exp.And e)
   {
+	    e.left.accept(this);
+	    this.say(" && ");
+	    e.right.accept(this);
+	    return;
   }
 
   @Override
   public void visit(codegen.C.exp.ArraySelect e)
   {
+	  e.array.accept(this);
+	  this.say("[");
+	  e.index.accept(this);
+	  this.say("]");
+	  
   }
 
   @Override
@@ -90,12 +104,17 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Id e)
   {
+	 //codegen.C.Tuple t = this. ;
+	//this.say("this->");
     this.say(e.id);
   }
 
   @Override
   public void visit(codegen.C.exp.Length e)
   {
+	e.array.accept(this);
+	this.say(".length");
+	return;
   }
 
   @Override
@@ -110,6 +129,16 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.NewIntArray e)
   {
+	//e.exp.accept(this);
+	//this.say(" = ");
+	this.say("malloc(sizeof(int)*");
+	e.exp.accept(this);
+	this.say( ")");
+	this.sayln(";");
+	//this.say("new int[");
+	//e.exp.accept(this);
+	//this.say("]");
+	//return;
   }
 
   @Override
@@ -123,6 +152,9 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.exp.Not e)
   {
+	  this.say("!(");
+	  e.exp.accept(this);
+	  this.say(")");
   }
 
   @Override
@@ -163,24 +195,76 @@ public class PrettyPrintVisitor implements Visitor
     this.printSpaces();
     this.say(s.id + " = ");
     s.exp.accept(this);
-    this.say(";");
+    this.sayln(";");
     return;
   }
 
   @Override
   public void visit(codegen.C.stm.AssignArray s)
   {
+	  this.printSpaces();
+	  //this.say(s.exp);
+	  this.say(s.id + "[");
+	  //s.index.accept(this);
+	  this.say("] = ");
+	  s.exp.accept(this);
+	  this.sayln(";");
+	  return;
   }
 
   @Override
   public void visit(codegen.C.stm.Block s)
   {
+	  for(codegen.C.stm.T stmm : s.stms)
+		  stmm.accept(this);
+	  return ;
   }
 
   @Override
   public void visit(codegen.C.stm.If s)
   {
-    this.printSpaces();
+	  this.printSpaces();
+		this.say("if (");
+		s.condition.accept(this);
+		this.sayln(")");
+		this.indent();
+		if(s.thenn instanceof codegen.C.stm.Block){
+			this.unIndent();
+			this.printSpaces();
+			this.sayln("{");
+			this.indent();
+			s.thenn.accept(this);
+			this.unIndent();
+			this.printSpaces();
+			this.say("}");
+			this.indent();
+			this.sayln("");
+		}else
+		    s.thenn.accept(this);
+		
+		this.unIndent();
+		//this.sayln("");
+		this.printSpaces();
+		this.sayln("else");
+		this.indent();
+		if(s.elsee instanceof codegen.C.stm.Block){
+			this.unIndent();
+			this.printSpaces();
+			this.sayln("{");
+			this.indent();
+			s.elsee.accept(this);
+			this.unIndent();
+			this.printSpaces();
+			this.say("}");
+			this.indent();
+			this.sayln("");
+		}else
+		    s.elsee.accept(this);
+		
+		this.sayln("");
+		this.unIndent();
+		return;
+    /*this.printSpaces();
     this.say("if (");
     s.condition.accept(this);
     this.sayln(")");
@@ -194,7 +278,7 @@ public class PrettyPrintVisitor implements Visitor
     s.elsee.accept(this);
     this.sayln("");
     this.unIndent();
-    return;
+    return;*/
   }
 
   @Override
@@ -210,6 +294,27 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.stm.While s)
   {
+	this.printSpaces();
+	this.say("while (");
+	s.condition.accept(this);
+	this.sayln(")");
+	this.indent();
+	if(s.body instanceof codegen.C.stm.Block){
+		this.unIndent();
+		this.printSpaces();
+		this.sayln("{");
+		this.indent();
+		s.body.accept(this);
+		this.unIndent();
+		this.printSpaces();
+		this.say("}");
+		this.indent();
+	}else
+	   s.body.accept(this);
+	
+	this.sayln("");
+	this.unIndent();
+	return;
   }
 
   // type
@@ -228,12 +333,16 @@ public class PrettyPrintVisitor implements Visitor
   @Override
   public void visit(codegen.C.type.IntArray t)
   {
+	  this.say("int *");
+	  //this.say("int[]");
   }
 
   // dec
   @Override
   public void visit(codegen.C.dec.Dec d)
   {
+	  d.type.accept(this);
+	  this.say(d.id);
   }
 
   // method

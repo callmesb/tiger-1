@@ -33,7 +33,6 @@ public class Fac {
 						new ast.type.Int(),// the return type
 						"ComputeFac",// the method name
 						new util.Flist<ast.dec.T>().addAll(
-								new ast.dec.Dec(new ast.type.Int(), "num"),
 								new ast.dec.Dec(new ast.type.Int(), "num")),
 						new util.Flist<ast.dec.T>().addAll(
 								new ast.dec.Dec(new ast.type.Int(), "num_aux")),

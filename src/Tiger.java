@@ -1,6 +1,9 @@
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import lexer.Lexer;
 import lexer.Token;
@@ -12,7 +15,7 @@ import control.Control;
 import parser.Parser;
 
 public class Tiger {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		InputStream fstream;
 		Parser parser;
 
@@ -138,7 +141,15 @@ public class Tiger {
     // call gcc to compile the generated C or x86
     // file, or call java to run the bytecode file.
     // Your code:
+    String str[] = new String[]{"gcc","a.c","-o","a.out"};
+    Process proc = Runtime.getRuntime().exec("str");
+    BufferedReader br=new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
+    String line=null;
+    while( (line=br.readLine())!=null)
+     {
+       System.out.println(line);
+     }
     return;
   }
 
